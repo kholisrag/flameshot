@@ -45,10 +45,10 @@ GeneralConf::GeneralConf(QWidget* parent)
     initCopyPathAfterSave();
     initAntialiasingPinZoom();
     initUseJpgForClipboard();
+    initIconType();
     initSaveAfterCopy();
-    inituploadHistoryMax();
+    initUploadHistoryMax();
     initUndoLimit();
-
     m_layout->addStretch();
 
     // this has to be at the end
@@ -423,7 +423,7 @@ void GeneralConf::historyConfirmationToDelete(bool checked)
     ConfigHandler().setHistoryConfirmationToDelete(checked);
 }
 
-void GeneralConf::inituploadHistoryMax()
+void GeneralConf::initUploadHistoryMax()
 {
     QGroupBox* box = new QGroupBox(tr("Latest Uploads Max Size"));
     box->setFlat(true);
@@ -569,4 +569,37 @@ void GeneralConf::setSaveAsFileExtension(QString extension)
 void GeneralConf::useJpgForClipboardChanged(bool checked)
 {
     ConfigHandler().setUseJpgForClipboard(checked);
+}
+
+void GeneralConf::initIconType()
+{
+
+    m_iconType = new QComboBox(this);
+    m_iconType->addItem("System");
+    m_iconType->addItem("Monochrome");
+    m_iconType->addItem("Color");
+
+    QHBoxLayout* iconLayout = new QHBoxLayout();
+
+    iconLayout->addWidget(new QLabel(tr("Preferred icon:")));
+    iconLayout->addWidget(m_iconType);
+
+    m_scrollAreaLayout->addLayout(iconLayout);
+    connect(m_iconType,
+            SIGNAL(currentTextChanged(const QString&)),
+            this,
+            SLOT(setIconType(QString)));
+}
+
+void GeneralConf::setIconType(QString const& type)
+{
+    if (type == "color"){
+        ConfigHandler().setIconType(":img/app/flameshot_color.svg");
+    }
+    else if (type == "monochrome"){
+        ConfigHandler().setIconType(":img/app/flameshot_monochrome.svg");
+    }
+    else {
+        ConfigHandler().setIconType(":img/app/flameshot.svg");
+    }
 }

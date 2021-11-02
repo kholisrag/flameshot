@@ -41,6 +41,7 @@ private slots:
     void togglePathFixed();
     void useJpgForClipboardChanged(bool checked);
     void setSaveAsFileExtension(QString extension);
+    void setIconType(QString const& type);
 
 private:
     const QString chooseFolder(const QString currentPath = "");
@@ -51,7 +52,7 @@ private:
     void initShowDesktopNotification();
     void initShowTrayIcon();
     void initHistoryConfirmationToDelete();
-    void inituploadHistoryMax();
+    void initUploadHistoryMax();
     void initUndoLimit();
     void initConfigButtons();
     void initCheckForUpdates();
@@ -62,6 +63,7 @@ private:
     void initCopyPathAfterSave();
     void initAntialiasingPinZoom();
     void initUseJpgForClipboard();
+    void initIconType();
 
     void _updateComponents(bool allowEmptySavePath);
 
@@ -91,4 +93,5 @@ private:
     QSpinBox* m_uploadHistoryMax;
     QSpinBox* m_undoLimit;
     QComboBox* m_setSaveAsFileExtension;
+    QComboBox* m_iconType;
 };

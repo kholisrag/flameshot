@@ -205,3 +205,15 @@ class SaveFileExtension : public ValueHandler
     QVariant process(const QVariant& val) override;
     QString expected() override;
 };
+
+class IconType : public ValueHandler
+{
+public:
+    IconType(QString const& val);
+    bool check(const QVariant& val) override;
+    QVariant process(const QVariant& val) override;
+    QString expected() override;
+
+private:
+    QString m_def;
+};

@@ -346,8 +346,9 @@ QList<CaptureTool::Type> ButtonList::fromIntList(const QList<int>& l)
 {
     QList<CaptureTool::Type> buttons;
     buttons.reserve(l.size());
-    for (auto const i : l)
+    for (auto const i : l) {
         buttons << static_cast<CaptureTool::Type>(i);
+    }
     return buttons;
 }
 
@@ -355,8 +356,9 @@ QList<int> ButtonList::toIntList(const QList<CaptureTool::Type>& l)
 {
     QList<int> buttons;
     buttons.reserve(l.size());
-    for (auto const i : l)
+    for (auto const i : l) {
         buttons << static_cast<int>(i);
+    }
     return buttons;
 }
 
@@ -437,20 +439,23 @@ QString UserColors::expected()
 
 bool SaveFileExtension::check(const QVariant& val)
 {
-    if (!val.canConvert(QVariant::String) || val.toString().isEmpty())
+    if (!val.canConvert(QVariant::String) || val.toString().isEmpty()) {
         return false;
+    }
 
     QString extension = val.toString();
 
-    if (extension.startsWith("."))
+    if (extension.startsWith(".")) {
         extension.remove(0, 1);
+    }
 
     QStringList imageFormatList;
     foreach (auto imageFormat, QImageWriter::supportedImageFormats())
         imageFormatList.append(imageFormat);
 
-    if (!imageFormatList.contains(extension))
+    if (!imageFormatList.contains(extension)) {
         return false;
+    }
 
     return true;
 }
@@ -459,8 +464,9 @@ QVariant SaveFileExtension::process(const QVariant& val)
 {
     QString extension = val.toString();
 
-    if (extension.startsWith("."))
+    if (extension.startsWith(".")) {
         extension.remove(0, 1);
+    }
 
     return QVariant::fromValue(extension);
 }
@@ -468,4 +474,35 @@ QVariant SaveFileExtension::process(const QVariant& val)
 QString SaveFileExtension::expected()
 {
     return QStringLiteral("supported image extension");
+}
+
+// SET ICON TYPE
+IconType::IconType(QString const& def)
+  : m_def(def)
+{}
+
+bool IconType::check(const QVariant& val)
+{
+    if (!val.canConvert(QVariant::String) || val.toString().isEmpty()) {
+        return false;
+    }
+    QString iconType = val.toString().toLower();
+
+    QStringList iconTypeList = { "system", "monochrome", "color" };
+
+    if (!iconTypeList.contains(iconType)) {
+        return false;
+    }
+
+    return true;
+}
+
+QVariant IconType::process(QVariant const& val)
+{
+    auto iconType = val.toString().toLower();
+    return QVariant::fromValue(iconType);
+}
+QString IconType::expected()
+{
+    return QStringLiteral("supported icon type");
 }
