@@ -30,17 +30,18 @@ set(GIT_API_URL "https://api.github.com/repos/flameshot-org/flameshot/releases/l
 #  message("git command is not found")
 #endif ()
 
+# This can be read from ${PROJECT_NAME} after project() is called
+if (APPLE)
+  set(CMAKE_CROSSCOMPILING "ON" CACHE STRING "")
+  set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "")
+  set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum OS X deployment version")
+endif()
+
 project(
         flameshot
         VERSION ${FLAMESHOT_VERSION}
         LANGUAGES CXX)
 set(PROJECT_NAME_CAPITALIZED "Flameshot")
-
-# This can be read from ${PROJECT_NAME} after project() is called
-if (APPLE)
-  set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum OS X deployment version")
-endif()
-
 
 # Configuration options
 set(DEFAULT_RUN_IN_PLACE FALSE)
@@ -170,6 +171,7 @@ if(WIN32)
     endif()
   endif()
 elseif(APPLE)
+  set(CPACK_SYSTEM_NAME "macos-universal" CACHE STRING "")
   set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 0)
   set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}-osx")
   set(CPACK_GENERATOR ZIP)
