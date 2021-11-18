@@ -47,23 +47,54 @@ jobs:
       - name: Checkout Source code
         uses: actions/checkout@v1
 
-      - name: Compile Qt
+      - name: Install Qt5 Universal
         shell: bash
         run: |
-          cd "${GITHUB_WORKSPACE}"
-          ./packaging/macos/install_qt5_cmake_universal.sh
+          brew install qt@5 cmake
+          brew link --force qt@5
+
+          mkdir -pv "${HOME}/.local/bin"
+          export PATH="${HOME}/.local/bin:$PATH"
+          git clone https://github.com/nedrysoft/makeuniversal.git
+          cd makeuniversal
+          qmake
+          make
+          chmod +x ./makeuniversal
+          mv ./makeuniversal $HOME/.local/bin/makeuniversal
+          cd ..
+          rm -rf makeuniversal
+          which makeuniversal
+
+          cd ${RUNNER_TEMP}
+          curl -L -H "Authorization: Bearer QQ==" -o qt5-arm64.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:79d1822773a193d84cb2426364681dd3d1f1659fd07566665474f941ab61c879
+          mkdir qt5-arm64
+          tar xzf qt5-arm64.tar.gz --directory qt5-arm64
+
+          mkdir -pv "${HOME}/.local/bin/qt5-fat"
+          export PATH="${HOME}/.local/bin/qt5-fat/bin:$PATH"
+
+          makeuniversal "${HOME}/.local/bin/qt5-fat" "$(brew --prefix)/Cellar/qt@5/5.15.2_1" "${RUNNER_TEMP}/qt5-arm64/qt@5/5.15.2_1"
+          # cp -PR "${HOME}/.local/bin/qt5-fat" "$(brew --prefix)/Cellar/qt@5/5.15.2_1"
+          file $(which qmake)
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          echo "$HOME/.local/bin/qt5-fat/bin" >> $GITHUB_PATH
 
       - name: Configure
+        shell: bash
         run: |
+          brew unlink qt@5
+          brew remove qt@5
+          file $(which qmake)
           mkdir -p "${DIR_BULD}"
           cd "${DIR_BULD}"
           rm -rf ./src/flameshot.dmg ./src/flameshot.app/
-          cmake .. -DQt5_DIR=$(brew --prefix qt5)/lib/cmake/Qt5
+          cmake .. -DQt5_DIR=$HOME/.local/bin/qt5-fat/lib/cmake/Qt5
 
       - name: Compile
+        shell: bash
         run: |
           cd "${DIR_BULD}"
-          make
+          make -j $(sysctl -n hw.ncpu)
 
       - name: Create key-chain and import certificate
         run: |
